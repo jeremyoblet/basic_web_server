@@ -1,0 +1,23 @@
+# Ignore build directory
+/build/
+
+# Ignore binary files
+*.exe
+*.o
+*.a
+*.so
+*.dylib
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore editor specific files
+*.swp
+*.swo
+*.bak
+*~
+.idea/
+.vscode/
+
+cmake-build-debug/
