@@ -1,6 +1,7 @@
 #include "HttpRequestHandler.h"
 
 #include <Config.h>
+#include "HttpGetHandler.h"
 #include <HttpHeadHandler.h>
 #include <HttpPostHandler.h>
 #include <memory>
@@ -8,7 +9,6 @@
 #include "ClientSocket.h"
 #include "HttpCGIHandler.h"
 
-#include "HttpGetHandler.h"
 
 void HttpRequestHandler::HandleRequest(int client_socket) {
     auto client = std::make_shared<ClientSocket>(client_socket);

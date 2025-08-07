@@ -1,6 +1,3 @@
-//
-// Created by huber on 25/07/2024.
-//
 #include "Utils.h"
 #include <chrono>
 #include "HttpData.h"

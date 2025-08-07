@@ -1,7 +1,3 @@
-//
-// Created by huber on 24/05/2024.
-//
-
 #include "ClientSocket.h"
 
 #include <string.h>

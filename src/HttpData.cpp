@@ -1,7 +1,3 @@
-//
-// Created by huber on 10/06/2024.
-//
-
 #include <memory>
 #include "HttpData.h"
 #include "Utils.h"
