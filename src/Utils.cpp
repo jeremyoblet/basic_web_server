@@ -19,8 +19,6 @@ std::vector<std::string> split(const std::string& str, const std::string& delimi
     return result;
 }
 
-//Honteusement volé sur StackOverflow
-//https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
 long long TimestampNow() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()
