@@ -1,20 +1,13 @@
+#include "CacheManager.h"
+#include "Config.h"
 #include "HttpGetHandler.h"
+#include "Utils.h"
+
 #include <fstream>
 #include <iostream>
-#include "CacheManager.h"
-#include "Utils.h"
-#include "Config.h"
 
-HttpGetHandler::HttpGetHandler()
-{
-}
 
-HttpGetHandler::~HttpGetHandler()
-{
-}
-
-void HttpGetHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpGetHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket, const std::shared_ptr<HttpData>& http_data) {
     std::string path = http_data->GetPath();
     if(path == "/")
     {

@@ -1,27 +1,26 @@
 #pragma once
 
-#include <iostream>
-
 #ifdef _WIN32
-#include <WinSock2.h>
+    #include <WinSock2.h>
 #else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <errno.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <unistd.h>
+    #include <errno.h>
 #endif
 
 #include "ThreadPool.h"
 #include "HttpRequestHandler.h"
 
+#include <iostream>
+
+
 class HttpServer {
 public:
     HttpServer(int port, size_t num_threads);
-
     ~HttpServer();
 
     void start();
-
     void stop();
 
 private:

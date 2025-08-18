@@ -1,15 +1,19 @@
 #include "HttpServer.h"
+#include "HttpRequestHandler.h"
 
 #ifdef _WIN32
-
-#define CLOSE_SOCKET(s) closesocket(s)
-#define INIT_SOCKET() WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData)
+    #define CLOSE_SOCKET(s) closesocket(s)
+    #define INIT_SOCKET() WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData)
 #else
-#define CLOSE_SOCKET(s) close(s)
-#define INIT_SOCKET() // Nothing needed for Unix
+    #define CLOSE_SOCKET(s) close(s)
+    #define INIT_SOCKET() // Nothing needed for Unix
 #endif
 
-HttpServer::HttpServer(int port, size_t num_threads) : port(port), thread_pool(num_threads), is_running(false) {}
+HttpServer::HttpServer(int port, size_t num_threads)
+    : port(port)
+    , thread_pool(num_threads)
+    , is_running(false)
+{}
 
 HttpServer::~HttpServer() {
     stop();

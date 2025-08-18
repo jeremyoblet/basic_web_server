@@ -1,7 +1,8 @@
 #include <Config.h>
+#include "HttpServer.h"
+
 #include <iostream>
 
-#include "HttpServer.h"
 
 int main() {
     try {

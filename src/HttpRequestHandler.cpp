@@ -1,13 +1,12 @@
-#include "HttpRequestHandler.h"
-
+#include "ClientSocket.h"
 #include <Config.h>
+#include "HttpRequestHandler.h"
 #include "HttpGetHandler.h"
 #include <HttpHeadHandler.h>
 #include <HttpPostHandler.h>
-#include <memory>
-
-#include "ClientSocket.h"
 #include "HttpCGIHandler.h"
+
+#include <memory>
 
 
 void HttpRequestHandler::HandleRequest(int client_socket) {
@@ -16,26 +15,22 @@ void HttpRequestHandler::HandleRequest(int client_socket) {
 
     Config& config = Config::GetInstance();
 
-    if(httpData == nullptr)
-    {
+    if(httpData == nullptr) {
         Send408Response(client);
         return;
     }
 
-    if(httpData->GetPath().find("/../") != std::string::npos)
-    {
+    if(httpData->GetPath().find("/../") != std::string::npos) {
         Send409Response(client);
         return;
     }
 
-    if(httpData->GetPath().find(config.GetCgiDirectory()) == 0)
-    {
+    if(httpData->GetPath().find(config.GetCgiDirectory()) == 0) {
         handle_cgi(client, httpData);
         return;
     }
 
-    switch(httpData->GetMethod())
-    {
+    switch(httpData->GetMethod()) {
     case HttpMethod::HTTP_METHOD_GET:
         handle_get(client, httpData);
         break;

@@ -2,7 +2,6 @@
 
 #include <string>
 
-#define TOKEN(string) if (token_string == string)
 
 class Config
 {
@@ -25,12 +24,12 @@ public:
     std::string GetCgiDirectory() const;
 
 private:
-    Config() = default;  // Private constructor
+    Config() = default;
     ~Config() = default;
 
     std::string RootDir;
     float TimeoutDelay;
-    int Port;
-    bool CgiEnabled;
+    int   Port;
+    bool  CgiEnabled;
     std::string CgiDirectory;
 };

@@ -1,6 +1,13 @@
 # Ignore build directory
 /build/
 
+# Ignore root directory
+/root/
+/root/cgi/
+
+# Ignore config file
+config.txt
+
 # Ignore binary files
 *.exe
 *.o

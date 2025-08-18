@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include "HttpRequestHandler.h"
+
+#include <string>
 
 class HttpGetHandler : public HttpRequestHandler
 {
