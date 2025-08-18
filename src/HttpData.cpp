@@ -1,6 +1,8 @@
-#include <memory>
 #include "HttpData.h"
 #include "Utils.h"
+
+#include <memory>
+
 
 HttpData::HttpData(const std::vector<HttpHeader>& headers, const HttpVersion& version, const HttpMethod& method,
                    const std::string& path, const std::vector<HttpQueryParam>& params, const std::string& body) :
@@ -118,6 +120,7 @@ std::vector<HttpQueryParam> ParseParams(const std::vector<std::string>& pathPara
 
 std::shared_ptr<HttpData> HttpData::fromString(const std::string& RawData) {
     size_t pos = RawData.find("\r\n\r\n");
+    if (pos == std::string::npos) return nullptr;
 
     auto headersData = RawData.substr(0, pos);
     auto body = RawData.substr(pos + 4);

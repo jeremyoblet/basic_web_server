@@ -27,9 +27,10 @@ private:
     Config() = default;
     ~Config() = default;
 
-    std::string RootDir;
-    float TimeoutDelay;
-    int   Port;
-    bool  CgiEnabled;
-    std::string CgiDirectory;
+private:
+    std::string RootDir    = "./root";
+    float        TimeoutDelay = 5.0f;
+    int          Port         = 8080;
+    bool         CgiEnabled   = false;
+    std::string  CgiDirectory = "./root//cgi";
 };

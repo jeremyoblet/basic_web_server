@@ -1,14 +1,13 @@
+#include "Config.h"
 #include "ClientSocket.h"
+#include "Utils.h"
 
-#include <string.h>
+#include <string>
 #include <stdio.h>
 #include <chrono>
-#include <Utils.h>
 
-#include "Config.h"
 
-ClientSocket::ClientSocket(int socket)
-{
+ClientSocket::ClientSocket(int socket) {
     this->socket = socket;
     memset(this->buffer, 0, BUFFER_SIZE);
     this->in_cursor_position = 0;
@@ -18,8 +17,7 @@ ClientSocket::ClientSocket(int socket)
 
 ClientSocket::~ClientSocket()
 {
-    if(this->socket)
-    {
+    if(this->socket) {
 #ifdef _WIN32
         closesocket(this->socket);
 #else
@@ -28,16 +26,13 @@ ClientSocket::~ClientSocket()
     }
 }
 
-int ClientSocket::recv_buffer()
-{
+int ClientSocket::recv_buffer() {
     if(!this->socket)
         return -1;
 
-    if(this->out_cursor_position > 0)
-    {
+    if(this->out_cursor_position > 0) {
         int data_cursor_pos = this->in_cursor_position - this->out_cursor_position;
-        if(data_cursor_pos > 0)
-        {
+        if(data_cursor_pos > 0) {
             memmove(this->buffer, this->buffer + this->out_cursor_position, data_cursor_pos);
         }
         this->in_cursor_position -= this->out_cursor_position;
@@ -51,8 +46,7 @@ int ClientSocket::recv_buffer()
 
     int data_count = recv(this->socket, this->buffer + this->in_cursor_position, max_receive_size, 0);
 
-    if(data_count < 0)
-    {
+    if(data_count < 0) {
 #ifdef _WIN32
         fprintf(stderr, "Error during receive : %d\n", WSAGetLastError());
 #else
@@ -62,12 +56,10 @@ int ClientSocket::recv_buffer()
     }
 
     this->in_cursor_position += data_count;
-
     return data_count;
 }
 
-bool ClientSocket::full_request_received()
-{
+bool ClientSocket::full_request_received() {
     char* end_of_headers = strstr(this->buffer, "\r\n\r\n");
 
     if(end_of_headers == nullptr)
@@ -79,8 +71,7 @@ bool ClientSocket::full_request_received()
 
     auto pos = headers.find("Content-Length: ");
 
-    if(pos == std::string::npos)
-    {
+    if(pos == std::string::npos) {
         this->expected_body_length = 0;
         return true;
     }
@@ -90,35 +81,30 @@ bool ClientSocket::full_request_received()
     std::string content_length_str = headers.substr(pos, end_pos - pos);
     this->expected_body_length = std::stoi(content_length_str);
 
-    if(received_data_count >= expected_body_length + headers_size + 4 /* 4 is for \r\n\r\n */)
-    {
+    if(received_data_count >= expected_body_length + headers_size + 4 /* 4 is for \r\n\r\n */) {
         return true;
     }
 
     return false;
 }
 
-int ClientSocket::send_http_response(const std::string& response)
-{
+int ClientSocket::send_http_response(const std::string& response {
     return send_packet((void*)response.c_str(), response.size());
 }
 
-int ClientSocket::send_packet(void* packet, int packet_size) const
-{
+int ClientSocket::send_packet(void* packet, int packet_size) const {
     if(!this->socket)
         return -1;
 
     int data_count = send(this->socket, static_cast<const char*>(packet), packet_size, 0);
 
-    if(data_count < packet_size)
-    {
+    if(data_count < packet_size) {
 #ifdef _WIN32
         fprintf(stderr, "Error during send_packet : %d\n", WSAGetLastError());
 #else
         fprintf(stderr, "Error during send packet : %d\n", errno);
 #endif
     }
-
     return data_count;
 }
 
@@ -131,20 +117,16 @@ std::shared_ptr<HttpData> ClientSocket::read_request()
 
     auto start = TimestampNow();
 
-    while(!full_request_received() || expected_body_length == -1)
-    {
+    while(!full_request_received() || expected_body_length == -1) {
         int data_count = this->recv_buffer();
         received_data_count += data_count;
 
-        if(data_count == 0 && TimestampNow() - start > config.GetTimeoutDelay())
-        {
+        if(data_count == 0 && TimestampNow() - start > config.GetTimeoutDelay()) {
             return nullptr;
         }
     }
 	
 	fprintf(stderr, "%s", this->buffer);
-
     auto httpData = HttpData::fromString(this->buffer);
-
     return httpData;
 }

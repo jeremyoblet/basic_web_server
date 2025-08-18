@@ -6,20 +6,17 @@ const std::string& CacheManager::GetCache(const std::string& key)
     static const std::string empty;
 
 #if __cplusplus >= 202002L
-    if(cache.contains(key))
-    {
+    if(cache.contains(key)) {
         return cache.at(key);
     }
 #else
-    if(cache.find(key) != cache.end())
-    {
+    if(cache.find(key) != cache.end()) {
         return cache.at(key);
     }
 #endif
 
     std::ifstream file(key, std::ios::binary);
-    if(!file.is_open())
-    {
+    if(!file.is_open()) {
         return empty;
     }
 
@@ -32,7 +29,6 @@ const std::string& CacheManager::GetCache(const std::string& key)
     return cache.at(key);
 }
 
-const std::string& CacheManager::GetFile(const std::string& path)
-{
+const std::string& CacheManager::GetFile(const std::string& path) {
     return GetCache(path);
 }

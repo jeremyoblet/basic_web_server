@@ -29,7 +29,7 @@ private:
 #ifdef _WIN32
     SOCKET server_socket = INVALID_SOCKET;
 #else
-    int    server_socket = -1;
+    int server_socket = -1;
 #endif
     ThreadPool thread_pool;
     std::atomic<bool> is_running{false};

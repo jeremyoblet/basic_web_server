@@ -4,8 +4,11 @@
 #include <memory>
 #include <vector>
 #include <stdexcept>
+
 #ifdef _WIN32
-#include <windows.h>
+    #include <windows.h>
+#endif
+
 
 // voir https://learn.microsoft.com/fr-fr/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output?redirectedfrom=MSDN
 std::string exec(const std::vector<std::string>& args, const std::string& input) {

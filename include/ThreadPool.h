@@ -10,6 +10,7 @@
 #include <condition_variable>
 #include <stdexcept>
 
+
 class ThreadPool {
 public:
     explicit ThreadPool(size_t num_threads, size_t max_queue_size = 10000)

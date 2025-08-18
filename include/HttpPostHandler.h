@@ -1,13 +1,13 @@
 #pragma once
 
-#include <HttpRequestHandler.h>
+#include "HttpRequestHandler.h"
 
 
 class HttpPostHandler: public HttpRequestHandler
 {
 public:
     HttpPostHandler() = default;
-    virtual ~HttpPostHandler() override = default;
+    ~HttpPostHandler() override = default;
 
     void HandleRequest(
         const std::shared_ptr<ClientSocket>& client_socket,

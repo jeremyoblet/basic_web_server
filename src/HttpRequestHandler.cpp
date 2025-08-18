@@ -1,9 +1,9 @@
 #include "ClientSocket.h"
-#include <Config.h>
+#include "Config.h"
 #include "HttpRequestHandler.h"
 #include "HttpGetHandler.h"
-#include <HttpHeadHandler.h>
-#include <HttpPostHandler.h>
+#include "HttpHeadHandler.h"
+#include "HttpPostHandler.h"
 #include "HttpCGIHandler.h"
 
 #include <memory>
@@ -62,12 +62,11 @@ void HttpRequestHandler::handle_post(std::shared_ptr<ClientSocket> client_socket
     handler.HandleRequest(client_socket, http_data);
 }
 
-void HttpRequestHandler::handle_put(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpRequestHandler::handle_put(std::shared_ptr<ClientSocket> c, const std::shared_ptr<HttpData>&) {
+    Send405Response(c);
 }
-
-void HttpRequestHandler::handle_delete(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpRequestHandler::handle_delete(std::shared_ptr<ClientSocket> c, const std::shared_ptr<HttpData>&) {
+    Send405Response(c);
 }
 
 void HttpRequestHandler::handle_head(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data) {
@@ -89,6 +88,15 @@ void HttpRequestHandler::Send400Response(std::shared_ptr<ClientSocket> client_so
 void HttpRequestHandler::Send404Response(std::shared_ptr<ClientSocket> client_socket) {
     const char *response = "HTTP/1.1 404 Not Found\r\nContent-Length: 9\r\n\r\nNot Found";
     client_socket->send_http_response(response);
+}
+
+void HttpRequestHandler::Send405Response(std::shared_ptr<ClientSocket> c) {
+    const char* r =
+        "HTTP/1.1 405 Method Not Allowed\r\n"
+        "Allow: GET, HEAD, POST\r\n"
+        "Content-Length: 18\r\n"
+        "\r\nMethod Not Allowed";
+    c->send_http_response(r);
 }
 
 void HttpRequestHandler::Send408Response(std::shared_ptr<ClientSocket> client_socket) {

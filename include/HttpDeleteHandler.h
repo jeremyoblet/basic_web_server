@@ -2,11 +2,12 @@
 
 #include "HttpRequestHandler.h"
 
+
 class HttpDeleteHandler: public HttpRequestHandler
 {
 public:
-    HttpDeleteHandler();
-    virtual ~HttpDeleteHandler();
+    HttpDeleteHandler() = default;
+    ~HttpDeleteHandler() override = default;
 
     void HandleRequest(
         const std::shared_ptr<ClientSocket>& client_socket,
