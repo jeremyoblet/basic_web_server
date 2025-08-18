@@ -1,6 +1,7 @@
 #include "HttpData.h"
 #include "Utils.h"
 
+#include <algorithm>
 #include <memory>
 
 
@@ -205,4 +206,23 @@ std::string HttpData::to_string() {
     result += Body;
 
     return result;
+}
+
+static const std::string& empty_str() {
+    static const std::string kEmpty;
+    return kEmpty;
+}
+
+const std::string& HttpData::GetHeader(const std::string& name) const {
+    for (const auto& h : Headers) {
+        if (h.name == name) return h.value;
+    }
+    return empty_str();
+}
+
+const std::string& HttpData::GetQueryParam(const std::string& name) const {
+    for (const auto& q : QueryParams) {
+        if (q.name == name) return q.value;
+    }
+    return empty_str();
 }

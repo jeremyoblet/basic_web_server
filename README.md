@@ -1,6 +1,6 @@
 # Basic Web Server
 
-A simple HTTP server written in C++ supporting GET, POST, PUT, DELETE, HEAD, and CGI methods. This project is designed as a learning base or as a lightweight standalone server.
+A simple HTTP server written in C++ supporting GET, POST, PUT, DELETE, HEAD methods. This project is designed as a learning base or as a lightweight standalone server.
 
 ## 📁 Project Structure
 
@@ -18,7 +18,6 @@ A simple HTTP server written in C++ supporting GET, POST, PUT, DELETE, HEAD, and
   - PUT
   - DELETE
   - HEAD
-- CGI script handling (server-side execution).
 - Cache management.
 - Thread pool for client connections.
 - Customizable configuration via the `Config` class.

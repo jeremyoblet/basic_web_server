@@ -4,7 +4,6 @@
 #include "HttpGetHandler.h"
 #include "HttpHeadHandler.h"
 #include "HttpPostHandler.h"
-#include "HttpCGIHandler.h"
 
 #include <memory>
 
@@ -25,10 +24,6 @@ void HttpRequestHandler::HandleRequest(int client_socket) {
         return;
     }
 
-    if (!config.GetCgiDirectory().empty() && httpData->GetPath().rfind(config.GetCgiDirectory(), 0) == 0) {
-        handle_cgi(client, httpData);
-        return;
-    }
 
     switch(httpData->GetMethod()) {
     case HttpMethod::HTTP_METHOD_GET:
@@ -71,12 +66,6 @@ void HttpRequestHandler::handle_delete(std::shared_ptr<ClientSocket> c, const st
 
 void HttpRequestHandler::handle_head(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data) {
     HttpHeadHandler handler;
-    handler.HandleRequest(client_socket, http_data);
-}
-
-void HttpRequestHandler::handle_cgi(std::shared_ptr<ClientSocket> client_socket,
-    const std::shared_ptr<HttpData>& http_data) {
-    HttpCGIHandler handler;
     handler.HandleRequest(client_socket, http_data);
 }
 

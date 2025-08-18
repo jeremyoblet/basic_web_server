@@ -1,34 +1,21 @@
 #include "HttpPostHandler.h"
-#include "Config.h"
+#include "HttpData.h"
+#include "ClientSocket.h"
 
-#include <fstream>
-
-
-void HttpPostHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket,
-    const std::shared_ptr<HttpData>& http_data)
+void HttpPostHandler::HandleRequest(
+    const std::shared_ptr<ClientSocket>& client,
+    const std::shared_ptr<HttpData>& req)
 {
-    Config& Config = Config::GetInstance();
-    std::string file_path_with_root = Config.GetRootDir() + http_data->GetPath();
-    std::ifstream file_exists(file_path_with_root);
+    if (req->GetPath() != "/api") { Send404Response(client); return; }
 
-    if (file_exists.good()) {
-        Send409Response(client_socket);
-        return;
-    }
+    const std::string body  = req->GetBody();               // suppose Content-Length parsé
+    const std::string ctype = req->GetHeader("Content-Type");
 
-    std::ofstream file(file_path_with_root, std::ios::binary | std::ios::trunc);
+    HttpData resp;
+    resp.SetStatusCode(200);
+    resp.SetContentType("application/json");
+    resp.SetBody(std::string("{\"ok\":true,\"len\":") + std::to_string(body.size()) +
+                 ",\"ctype\":\"" + ctype + "\"}");
 
-    if (file.is_open()) {
-        file.write(http_data->GetBody().c_str(), http_data->GetBody().size());
-        file.close();
-    }
-    else {
-        Send500Response(client_socket);
-    }
-
-    HttpData response;
-    response.SetStatusCode(200);
-
-    client_socket->send_http_response(response.to_string());
+    client->send_http_response(resp.to_string());
 }
-

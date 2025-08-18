@@ -19,7 +19,6 @@ protected:
     void handle_put(std::shared_ptr<ClientSocket>, const std::shared_ptr<HttpData>&);
     void handle_delete(std::shared_ptr<ClientSocket>, const std::shared_ptr<HttpData>&);
     void handle_head(std::shared_ptr<ClientSocket>, const std::shared_ptr<HttpData>&);
-    void handle_cgi(std::shared_ptr<ClientSocket>, const std::shared_ptr<HttpData>&);
 
     void Send400Response(std::shared_ptr<ClientSocket>);
     void Send404Response(std::shared_ptr<ClientSocket>);

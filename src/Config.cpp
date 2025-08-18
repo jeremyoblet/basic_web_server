@@ -30,14 +30,6 @@ bool Config::LoadConfig(const std::string& config_file)
         if(token_string == "Port") {
             Port = std::stoi(value_string);
         }
-
-        if (token_string == "EnableCgi") {
-            CgiEnabled = (value_string == "true" || value_string == "1");
-        }
-
-        if (token_string == "CgiDirectory") {
-            CgiDirectory = value_string;
-        }
     }
     return true;
 }
@@ -54,6 +46,3 @@ int Config::GetPort() const {
     return Port;
 }
 
-std::string Config::GetCgiDirectory() const {
-    return CgiDirectory;
-}

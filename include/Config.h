@@ -20,8 +20,6 @@ public:
     std::string GetRootDir() const;
     float GetTimeoutDelay() const;
     int GetPort() const;
-    bool IsCgiEnabled() const;
-    std::string GetCgiDirectory() const;
 
 private:
     Config() = default;
@@ -31,6 +29,4 @@ private:
     std::string RootDir    = "./root";
     float        TimeoutDelay = 5.0f;
     int          Port         = 8080;
-    bool         CgiEnabled   = false;
-    std::string  CgiDirectory = "./root//cgi";
 };

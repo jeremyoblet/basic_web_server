@@ -3,7 +3,6 @@
 
 # Ignore root directory
 /root/
-/root/cgi/
 
 # Ignore config file
 config.txt
