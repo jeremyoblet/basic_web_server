@@ -9,16 +9,14 @@
 
 void HttpGetHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket, const std::shared_ptr<HttpData>& http_data) {
     std::string path = http_data->GetPath();
-    if(path == "/")
-    {
+    if(path == "/") {
         path = "/index.html";
     }
 
     SendFileResponse(client_socket, path);
 }
 
-void HttpGetHandler::SendFileResponse(std::shared_ptr<ClientSocket> client_socket, const std::string& path)
-{
+void HttpGetHandler::SendFileResponse(std::shared_ptr<ClientSocket> client_socket, const std::string& path) {
     Config& config = Config::GetInstance();
     std::string file_path_with_root = config.GetRootDir() + path;
 
@@ -29,8 +27,7 @@ void HttpGetHandler::SendFileResponse(std::shared_ptr<ClientSocket> client_socke
 	
 	std::cout << file_path_with_root.c_str() << std::endl;
 
-    if(file_data.empty())
-    {
+    if(file_data.empty()) {
         Send404Response(client_socket);
         return;
     }

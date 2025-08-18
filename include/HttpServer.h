@@ -9,27 +9,28 @@
     #include <errno.h>
 #endif
 
-#include "ThreadPool.h"
 #include "HttpRequestHandler.h"
+#include "ThreadPool.h"
 
+#include <atomic>
 #include <iostream>
 
 
 class HttpServer {
+
 public:
     HttpServer(int port, size_t num_threads);
     ~HttpServer();
-
     void start();
     void stop();
 
 private:
     int port;
 #ifdef _WIN32
-    SOCKET server_socket;
+    SOCKET server_socket = INVALID_SOCKET;
 #else
-    int server_socket;
+    int    server_socket = -1;
 #endif
     ThreadPool thread_pool;
-    bool is_running;
+    std::atomic<bool> is_running{false};
 };

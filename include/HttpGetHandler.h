@@ -2,13 +2,14 @@
 
 #include "HttpRequestHandler.h"
 
+#include <memory>
 #include <string>
 
 class HttpGetHandler : public HttpRequestHandler
 {
 public:
-    HttpGetHandler();
-    virtual ~HttpGetHandler();
+    HttpGetHandler() = default;
+    ~HttpGetHandler() override = default;
 
     void HandleRequest(
         const std::shared_ptr<ClientSocket>& client_socket,

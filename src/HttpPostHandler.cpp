@@ -1,14 +1,8 @@
 #include "HttpPostHandler.h"
-#include <fstream>
 #include "Config.h"
 
-HttpPostHandler::HttpPostHandler()
-{
-}
+#include <fstream>
 
-HttpPostHandler::~HttpPostHandler()
-{
-}
 
 void HttpPostHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket,
     const std::shared_ptr<HttpData>& http_data)
@@ -17,21 +11,18 @@ void HttpPostHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_
     std::string file_path_with_root = Config.GetRootDir() + http_data->GetPath();
     std::ifstream file_exists(file_path_with_root);
 
-    if (file_exists.good())
-    {
+    if (file_exists.good()) {
         Send409Response(client_socket);
         return;
     }
 
     std::ofstream file(file_path_with_root, std::ios::binary | std::ios::trunc);
 
-    if (file.is_open())
-    {
+    if (file.is_open()) {
         file.write(http_data->GetBody().c_str(), http_data->GetBody().size());
         file.close();
     }
-    else
-    {
+    else {
         Send500Response(client_socket);
     }
 

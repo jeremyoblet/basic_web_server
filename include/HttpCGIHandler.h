@@ -5,8 +5,8 @@
 class HttpCGIHandler: public HttpRequestHandler
 {
 public:
-    HttpCGIHandler();
-    virtual ~HttpCGIHandler();
+    HttpCGIHandler() = default;
+    virtual ~HttpCGIHandler() override = default;
 
     void HandleRequest(
     const std::shared_ptr<ClientSocket>& client_socket,

@@ -1,15 +1,9 @@
 #include "HttpDeleteHandler.h"
-#include <fstream>
-#include <cstdio>
 #include "Config.h"
 
-HttpDeleteHandler::HttpDeleteHandler()
-{
-}
+#include <fstream>
+#include <cstdio>
 
-HttpDeleteHandler::~HttpDeleteHandler()
-{
-}
 
 void HttpDeleteHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket,
     const std::shared_ptr<HttpData>& http_data)
@@ -17,16 +11,13 @@ void HttpDeleteHandler::HandleRequest(const std::shared_ptr<ClientSocket>& clien
     Config& Config = Config::GetInstance();
     std::string file_path_with_root = Config.GetRootDir() + http_data->GetPath();
     std::ifstream file(file_path_with_root);
-    if (file.good())
-    {
+    if (file.good()) {
         file.close();
-        if (remove(file_path_with_root.c_str()) != 0)
-        {
+        if (remove(file_path_with_root.c_str()) != 0) {
             Send500Response(client_socket);
         }
     }
-    else
-    {
+    else {
         Send404Response(client_socket);
     }
 

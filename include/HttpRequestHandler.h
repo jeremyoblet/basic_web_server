@@ -14,8 +14,7 @@ public:
 
     virtual void HandleRequest(
         const std::shared_ptr<ClientSocket>& client_socket,
-        const std::shared_ptr<HttpData>& http_data
-        ) = 0;
+        const std::shared_ptr<HttpData>& http_data) {}
 
         
     void handle_get(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data);

@@ -5,8 +5,8 @@
 class HttpPutHandler: public HttpRequestHandler
 {
 public:
-    HttpPutHandler();
-    virtual ~HttpPutHandler();
+    HttpPutHandler() = default;
+    virtual ~HttpPutHandler() override = default;
 
     void HandleRequest(
         const std::shared_ptr<ClientSocket>& client_socket,

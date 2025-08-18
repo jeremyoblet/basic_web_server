@@ -1,15 +1,8 @@
 #include "HttpPutHandler.h"
-#include <fstream>
-
 #include "Config.h"
 
-HttpPutHandler::HttpPutHandler()
-{
-}
+#include <fstream>
 
-HttpPutHandler::~HttpPutHandler()
-{
-}
 
 void HttpPutHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_socket,
     const std::shared_ptr<HttpData>& http_data)
@@ -18,13 +11,11 @@ void HttpPutHandler::HandleRequest(const std::shared_ptr<ClientSocket>& client_s
     std::string file_path_with_root = Config.GetRootDir() + http_data->GetPath();
     std::ofstream file(file_path_with_root, std::ios::binary | std::ios::trunc);
 
-    if (file.is_open())
-    {
+    if (file.is_open()) {
         file.write(http_data->GetBody().c_str(), http_data->GetBody().size());
         file.close();
     }
-    else
-    {
+    else {
         Send500Response(client_socket);
     }
 

@@ -1,15 +1,9 @@
 #include "HttpHeadHandler.h"
-#include <fstream>
 #include "Config.h"
 #include "Utils.h"
 
-HttpHeadHandler::HttpHeadHandler()
-{
-}
+#include <fstream>
 
-HttpHeadHandler::~HttpHeadHandler()
-{
-}
 
 void HttpHeadHandler::HandleRequest(
     const std::shared_ptr<ClientSocket>& client_socket,

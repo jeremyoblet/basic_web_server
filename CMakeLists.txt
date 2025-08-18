@@ -18,7 +18,6 @@ add_executable(cherokee
         src/HttpPutHandler.cpp
         src/HttpCGIHandler.cpp
         src/HttpRequestHandler.cpp
-        src/Utils.cpp
         src/Config.cpp
         src/CacheManager.cpp)
 

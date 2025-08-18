@@ -52,67 +52,56 @@ void HttpRequestHandler::HandleRequest(int client_socket) {
     }
 }
 
-void HttpRequestHandler::handle_get(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpRequestHandler::handle_get(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data) {
     HttpGetHandler handler;
     handler.HandleRequest(client_socket, http_data);
 }
 
-void HttpRequestHandler::handle_post(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpRequestHandler::handle_post(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data) {
     HttpPostHandler handler;
     handler.HandleRequest(client_socket, http_data);
 }
 
 void HttpRequestHandler::handle_put(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
 {
-
 }
 
 void HttpRequestHandler::handle_delete(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
 {
-
 }
 
-void HttpRequestHandler::handle_head(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data)
-{
+void HttpRequestHandler::handle_head(std::shared_ptr<ClientSocket> client_socket, const std::shared_ptr<HttpData>& http_data) {
     HttpHeadHandler handler;
     handler.HandleRequest(client_socket, http_data);
 }
 
 void HttpRequestHandler::handle_cgi(std::shared_ptr<ClientSocket> client_socket,
-    const std::shared_ptr<HttpData>& http_data)
-{
+    const std::shared_ptr<HttpData>& http_data) {
     HttpCGIHandler handler;
     handler.HandleRequest(client_socket, http_data);
 }
 
-void HttpRequestHandler::Send400Response(std::shared_ptr<ClientSocket> client_socket)
-{
+void HttpRequestHandler::Send400Response(std::shared_ptr<ClientSocket> client_socket) {
     const char *response = "HTTP/1.1 400 Bad Request\r\nContent-Length: 11\r\n\r\nBad Request";
     client_socket->send_http_response(response);
 }
 
-void HttpRequestHandler::Send404Response(std::shared_ptr<ClientSocket> client_socket)
-{
+void HttpRequestHandler::Send404Response(std::shared_ptr<ClientSocket> client_socket) {
     const char *response = "HTTP/1.1 404 Not Found\r\nContent-Length: 9\r\n\r\nNot Found";
     client_socket->send_http_response(response);
 }
 
-void HttpRequestHandler::Send408Response(std::shared_ptr<ClientSocket> client_socket)
-{
+void HttpRequestHandler::Send408Response(std::shared_ptr<ClientSocket> client_socket) {
     const char* response = "HTTP/1.1 408 Request Timeout\r\nConnection: close\r\nContent-Length: 14\r\n\r\nRequest Timeout";
     client_socket->send_http_response(response);
 }
 
-void HttpRequestHandler::Send409Response(std::shared_ptr<ClientSocket> client_socket)
-{
+void HttpRequestHandler::Send409Response(std::shared_ptr<ClientSocket> client_socket) {
     const char* response = "HTTP/1.1 409 Conflict\r\nContent-Length: 8\r\n\r\nConflict";
     client_socket->send_http_response(response);
 }
 
-void HttpRequestHandler::Send500Response(std::shared_ptr<ClientSocket> client_socket)
-{
+void HttpRequestHandler::Send500Response(std::shared_ptr<ClientSocket> client_socket) {
     const char *response = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 21\r\n\r\nInternal Server Error";
     client_socket->send_http_response(response);
 }

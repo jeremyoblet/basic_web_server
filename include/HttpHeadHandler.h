@@ -5,8 +5,8 @@
 class HttpHeadHandler: public HttpRequestHandler
 {
 public:
-    HttpHeadHandler();
-    virtual ~HttpHeadHandler();
+    HttpHeadHandler() = default;
+    virtual ~HttpHeadHandler() override = default;
 
     void HandleRequest(const std::shared_ptr<ClientSocket>& client_socket, const std::shared_ptr<HttpData>& http_data) override;
 
