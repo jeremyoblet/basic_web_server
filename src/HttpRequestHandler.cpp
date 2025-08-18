@@ -25,7 +25,7 @@ void HttpRequestHandler::HandleRequest(int client_socket) {
         return;
     }
 
-    if(httpData->GetPath().find(config.GetCgiDirectory()) == 0) {
+    if (!config.GetCgiDirectory().empty() && httpData->GetPath().rfind(config.GetCgiDirectory(), 0) == 0) {
         handle_cgi(client, httpData);
         return;
     }

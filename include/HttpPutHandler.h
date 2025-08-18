@@ -9,10 +9,8 @@ public:
     HttpPutHandler() = default;
     ~HttpPutHandler() override = default;
 
-    void HandleRequest(
-        const std::shared_ptr<ClientSocket>& client_socket,
-        const std::shared_ptr<HttpData>& http_data
-        ) override;
-private:
+    void HandleRequest(const std::shared_ptr<ClientSocket>&, const std::shared_ptr<HttpData>&) override;
 
+private:
+    void SendFileResponse(std::shared_ptr<ClientSocket>, const std::string& path);
 };

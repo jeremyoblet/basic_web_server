@@ -88,7 +88,7 @@ bool ClientSocket::full_request_received() {
     return false;
 }
 
-int ClientSocket::send_http_response(const std::string& response {
+int ClientSocket::send_http_response(const std::string& response) {
     return send_packet((void*)response.c_str(), response.size());
 }
 

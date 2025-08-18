@@ -37,7 +37,8 @@ make
 ### Build on windows with MinGw
 
 ```
-cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+rm -rf build
+cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug
 cmake --build build -j
 ./build/cherokee.exe
 ```

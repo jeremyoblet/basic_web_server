@@ -9,8 +9,8 @@ public:
     HttpHeadHandler() = default;
     ~HttpHeadHandler() override = default;
 
-    void HandleRequest(const std::shared_ptr<ClientSocket>& client_socket, const std::shared_ptr<HttpData>& http_data) override;
+    void HandleRequest(const std::shared_ptr<ClientSocket>&, const std::shared_ptr<HttpData>&) override;
 
-private:
-
+// private:
+//     void SendFileResponse(std::shared_ptr<ClientSocket>, const std::string& path);
 };

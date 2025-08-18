@@ -1,178 +1,98 @@
 #pragma once
 
-#include <stdexcept>
-#include <memory>
+#include <string>
 #include <vector>
 #include <stdexcept>
 
 #ifdef _WIN32
-    #include <windows.h>
-#endif
+  #include <windows.h>
 
+  inline std::string exec(const std::vector<std::string>& args, const std::string& input) {
+      // Concatène la ligne de commande (simple, sans guillemets avancés)
+      std::string cmd;
+      for (auto& a : args) { cmd += a; cmd += ' '; }
+      if (!cmd.empty()) cmd.pop_back();
 
-// voir https://learn.microsoft.com/fr-fr/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output?redirectedfrom=MSDN
-std::string exec(const std::vector<std::string>& args, const std::string& input) {
-    std::string command;
-    for (const auto& arg : args)
-    {
-        command += arg + " ";
-    }
+      SECURITY_ATTRIBUTES sa{ sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
+      HANDLE inR=nullptr,inW=nullptr,outR=nullptr,outW=nullptr;
+      if (!CreatePipe(&inR,&inW,&sa,0)) throw std::runtime_error("CreatePipe stdin");
+      if (!SetHandleInformation(inW, HANDLE_FLAG_INHERIT, 0)) throw std::runtime_error("SetHandleInformation stdin");
+      if (!CreatePipe(&outR,&outW,&sa,0)) throw std::runtime_error("CreatePipe stdout");
+      if (!SetHandleInformation(outR, HANDLE_FLAG_INHERIT, 0)) throw std::runtime_error("SetHandleInformation stdout");
 
-    // Remove the trailing space
-    if (!command.empty())
-    {
-        command.pop_back();
-    }
+      STARTUPINFOA si{};
+      si.cb = sizeof(si);
+      si.hStdInput  = inR;
+      si.hStdOutput = outW;
+      si.hStdError  = outW;
+      si.dwFlags    = STARTF_USESTDHANDLES;
 
-    // Create pipes for the process's STDOUT, STDERR, and STDIN
-    HANDLE hStdOutRead, hStdOutWrite;
-    HANDLE hStdErrRead, hStdErrWrite;
-    HANDLE hStdInRead, hStdInWrite;
+      PROCESS_INFORMATION pi{};
+      std::string cmdCopy = cmd;
+      if (!CreateProcessA(nullptr, cmdCopy.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi)) {
+          CloseHandle(inR); CloseHandle(inW); CloseHandle(outR); CloseHandle(outW);
+          throw std::runtime_error("CreateProcess failed");
+      }
 
-    SECURITY_ATTRIBUTES saAttr = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
-    if (!CreatePipe(&hStdOutRead, &hStdOutWrite, &saAttr, 0) ||
-        !CreatePipe(&hStdErrRead, &hStdErrWrite, &saAttr, 0) ||
-        !CreatePipe(&hStdInRead, &hStdInWrite, &saAttr, 0))
-    {
-        return "";
-    }
+      CloseHandle(inR);   // le processus lit sur inR
+      DWORD written=0;
+      if (!input.empty()) {
+          WriteFile(inW, input.data(), (DWORD)input.size(), &written, nullptr);
+      }
+      CloseHandle(inW);   // fin d'entrée
 
-    // Set the write handle to be inheritable by the child process
-    SetHandleInformation(hStdOutRead, HANDLE_FLAG_INHERIT, 0);
-    SetHandleInformation(hStdErrRead, HANDLE_FLAG_INHERIT, 0);
-    SetHandleInformation(hStdInWrite, HANDLE_FLAG_INHERIT, 0);
+      std::string out;
+      char buf[4096];
+      DWORD read=0;
+      for (;;) {
+          if (!ReadFile(outR, buf, sizeof(buf), &read, nullptr) || read==0) break;
+          out.append(buf, buf+read);
+      }
+      CloseHandle(outR);
+      CloseHandle(outW);
 
-    PROCESS_INFORMATION pi;
-    STARTUPINFOA si = { sizeof(STARTUPINFOA), nullptr, nullptr, nullptr, 0,
-                        0, 0, 0, 0, 0, 0,
-                STARTF_USESTDHANDLES, 0, 0, nullptr, hStdInRead,
-                hStdOutWrite, hStdErrWrite };
+      WaitForSingleObject(pi.hProcess, INFINITE);
+      CloseHandle(pi.hThread);
+      CloseHandle(pi.hProcess);
+      return out;
+  }
 
-    if (!CreateProcessA(nullptr, const_cast<char*>(command.c_str()), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi))
-    {
-        return "";
-    }
-
-    // Write the input to the stdin pipe
-    DWORD bytesWritten;
-    if (!WriteFile(hStdInWrite, input.c_str(), input.size(), &bytesWritten, nullptr))
-    {
-        throw std::runtime_error("Failed to write to stdin");
-    }
-
-    // Close the write ends of the pipes
-    CloseHandle(hStdOutWrite);
-    CloseHandle(hStdErrWrite);
-    CloseHandle(hStdInRead);
-    CloseHandle(hStdInWrite);
-
-    // Read the output
-    std::string output;
-    CHAR buffer[128];
-    memset(buffer, 0, sizeof(buffer));
-    DWORD bytesRead;
-    BOOL success = FALSE;
-
-    for (;;)
-    {
-        success = ReadFile(hStdOutRead, buffer, sizeof(buffer) - 1, &bytesRead, NULL);
-        if (!success || bytesRead == 0) break;
-        buffer[bytesRead] = '\0';
-        output += buffer;
-    }
-
-    // for (;;)
-    // {
-    //     success = ReadFile(hStdErrRead, buffer, sizeof(buffer) - 1, &bytesRead, NULL);
-    //     if (!success || bytesRead == 0) break;
-    //     buffer[bytesRead] = '\0';
-    //     output += buffer;
-    // }
-
-    // Wait until child process exits
-    WaitForSingleObject(pi.hProcess, INFINITE);
-
-    // Close handles
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    CloseHandle(hStdOutRead);
-    CloseHandle(hStdErrRead);
-
-    return output;
-}
 #else
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <array>
-std::string exec(const std::vector<std::string>& args, const std::string& input) {
-    int stdout_pipe[2];
-    int stderr_pipe[2];
-    int stdin_pipe[2];
+  #include <unistd.h>
+  #include <sys/wait.h>
+  #include <fcntl.h>
 
-    if (pipe(stdout_pipe) == -1 || pipe(stderr_pipe) == -1 || pipe(stdin_pipe) == -1) {
-        throw std::runtime_error("Failed to create pipes");
-    }
+  inline std::string exec(const std::vector<std::string>& args, const std::string& input) {
+      int inPipe[2], outPipe[2];
+      if (pipe(inPipe)  == -1) throw std::runtime_error("pipe in");
+      if (pipe(outPipe) == -1) { close(inPipe[0]); close(inPipe[1]); throw std::runtime_error("pipe out"); }
 
-    pid_t pid = fork();
-    if (pid == -1) {
-        throw std::runtime_error("Failed to fork process");
-    } else if (pid == 0) {
-        // Child process
-        close(stdout_pipe[0]);
-        dup2(stdout_pipe[1], STDOUT_FILENO);
-        close(stdout_pipe[1]);
+      pid_t pid = fork();
+      if (pid < 0) { close(inPipe[0]); close(inPipe[1]); close(outPipe[0]); close(outPipe[1]); throw std::runtime_error("fork"); }
 
-        close(stderr_pipe[0]);
-        dup2(stderr_pipe[1], STDERR_FILENO);
-        close(stderr_pipe[1]);
+      if (pid == 0) {
+          dup2(inPipe[0], STDIN_FILENO);
+          dup2(outPipe[1], STDOUT_FILENO);
+          dup2(outPipe[1], STDERR_FILENO);
+          close(inPipe[1]); close(outPipe[0]);
 
-        close(stdin_pipe[1]);
-        dup2(stdin_pipe[0], STDIN_FILENO);
-        close(stdin_pipe[0]);
+          std::vector<char*> argv; argv.reserve(args.size()+1);
+          for (auto& s : args) argv.push_back(const_cast<char*>(s.c_str()));
+          argv.push_back(nullptr);
+          execvp(argv[0], argv.data());
+          _exit(127);
+      }
 
-        std::vector<char*> cargs;
-        for (const auto& arg : args) {
-            cargs.push_back(const_cast<char*>(arg.c_str()));
-        }
-        cargs.push_back(nullptr);
+      close(inPipe[0]); close(outPipe[1]);
+      if (!input.empty()) write(inPipe[1], input.data(), input.size());
+      close(inPipe[1]);
 
-        execvp(cargs[0], cargs.data());
-        _exit(EXIT_FAILURE); // If execvp fails
-    } else {
-        // Parent process
-        close(stdout_pipe[1]);
-        close(stderr_pipe[1]);
-        close(stdin_pipe[0]);
-
-        // Write the input to the stdin pipe
-        if (write(stdin_pipe[1], input.c_str(), input.size()) == -1) {
-            throw std::runtime_error("Failed to write to stdin pipe");
-        }
-        close(stdin_pipe[1]);
-
-        // Read the output from the stdout and stderr pipes
-        std::array<char, 128> buffer;
-        std::string result;
-        ssize_t count;
-
-        while ((count = read(stdout_pipe[0], buffer.data(), buffer.size())) > 0) {
-            result.append(buffer.data(), count);
-        }
-        close(stdout_pipe[0]);
-
-        while ((count = read(stderr_pipe[0], buffer.data(), buffer.size())) > 0) {
-            result.append(buffer.data(), count);
-        }
-        close(stderr_pipe[0]);
-
-        // Wait for the child process to exit
-        int status;
-        waitpid(pid, &status, 0);
-
-        return result;
-    }
-}
-
+      std::string out;
+      char buf[4096];
+      ssize_t n;
+      while ((n = read(outPipe[0], buf, sizeof buf)) > 0) out.append(buf, buf+n);
+      close(outPipe[0]);
+      int status=0; waitpid(pid, &status, 0);
+      return out;
+  }
 #endif
-
